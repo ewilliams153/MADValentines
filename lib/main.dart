@@ -8,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,15 +24,43 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  late AnimationController _heartbeatController;
+  late Animation<double> _animation;
   int _time = 10;
+  String _display = 'happyValentines';
+  double size = 50;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _heartbeatController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+      lowerBound: 0.5,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _heartbeatController,
+      curve: Curves.ease,
+    );
+
+    _heartbeatController.forward();
+    _heartbeatController.addStatusListener((status){
+      setState ((){
+        if (status == AnimationStatus.completed) {
+          _heartbeatController.reverse();
+        }else if (status == AnimationStatus.dismissed){
+          _heartbeatController.forward();
+        }
+      });
 
   // Use this to start the timer
   void _startTimer() {
@@ -46,7 +73,21 @@ class _MyHomePageState extends State<MyHomePage> {
         timer.cancel();
       }
     });
+
+    _heartbeatController.addListener((){
+      setState((){
+        size = _heartbeatController.value * 250;
+      });
+    });
+    //_heartbeatController.repeat();
+   
+
+  @override
+  void dispose() {
+    _heartbeatController.dispose();
+    super.dispose();
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Happy Valentine\'s Day!',
                 style: TextStyle(fontSize: 30),
               ),
+                Center(
+              child: Stack(children: <Widget>[
+                Center(
+                  child: Image.asset('assets/images/happyValentines.png', height: size),
+                ),
+              ]),
               const SizedBox(height: 20),
               AnimationTimer(time: _time),
             ],
@@ -117,3 +164,4 @@ class AnimationTimer extends StatelessWidget {
     );
   }
 }
+
