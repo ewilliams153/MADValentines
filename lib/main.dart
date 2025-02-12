@@ -8,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,10 +24,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-<<<<<<<<< Temporary merge branch 1
-=========
 
->>>>>>>>> Temporary merge branch 2
   final String title;
 
   @override
@@ -37,10 +33,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _heartbeatController;
-  late Animation<double> _animation;
-  int _time = 10;
-  String _display = 'happyValentines';
+
   double size = 50;
+  int _time = 10;
+
+  void _startTimer() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_time > 0) {
+        setState(() {
+          _time--;
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -52,48 +59,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       lowerBound: 0.5,
     );
 
-    _animation = CurvedAnimation(
-      parent: _heartbeatController,
-      curve: Curves.ease,
-    );
-
     _heartbeatController.forward();
-    _heartbeatController.addStatusListener((status){
-      setState ((){
+    _heartbeatController.addStatusListener((status) {
+      setState(() {
         if (status == AnimationStatus.completed) {
           _heartbeatController.reverse();
-        }else if (status == AnimationStatus.dismissed){
+        } else if (status == AnimationStatus.dismissed) {
           _heartbeatController.forward();
         }
       });
-
-  // Use this to start the timer
-  void _startTimer() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_time > 0) {
-        setState(() {
-          _time--;
-        });
-      } else {
-        timer.cancel();
-      }
->>>>>>>>> Temporary merge branch 2
     });
 
-    _heartbeatController.addListener((){
-      setState((){
+    _heartbeatController.addListener(() {
+      setState(() {
         size = _heartbeatController.value * 250;
       });
     });
-    //_heartbeatController.repeat();
-   
-
-  @override
-  void dispose() {
-    _heartbeatController.dispose();
-    super.dispose();
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -109,30 +91,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Happy Valentine\'s Day!',
-                style: TextStyle(fontSize: 30),
-              ),
-                Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
               child: Stack(children: <Widget>[
                 Center(
-                  child: Image.asset('assets/images/happyValentines.png', height: size),
-                ),
+                  child: Image.asset('assets/images/happyValentines.png',
+                    height: size)
+                )
               ]),
-              const SizedBox(height: 20),
-              AnimationTimer(time: _time),
-            ],
-          ),
+            ),
+            AnimationTimer(time: _time)
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        // Temporary way to trigger timer
         onPressed: _startTimer,
-        tooltip: 'Start Timer',
         child: const Icon(Icons.add),
       ),
     );
@@ -144,7 +119,7 @@ class AnimationTimer extends StatelessWidget {
 
   const AnimationTimer({super.key, required this.time});
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -170,4 +145,3 @@ class AnimationTimer extends StatelessWidget {
     );
   }
 }
->>>>>>>>> Temporary merge branch 2
